@@ -198,21 +198,30 @@ class LibvirtXMLBuilder(object):
         :param interface: Network
         """
 
-        if interface.type != 'network':
+        if interface.type not in ['network', 'bridge']:
             raise NotImplementedError(
-                message='Interface types different from network are not '
+                message='Interface types different from network and bridge are not '
                         'implemented yet')
-        with device_xml.interface(type=interface.type):
-            device_xml.mac(address=interface.mac_address)
-            device_xml.source(
-                network=self.driver.network_name(interface.network))
-            device_xml.target(dev="{0}{1}".format(if_prefix, interface.id))
-            if interface.type is not None:
-                device_xml.model(type=interface.model)
-            device_xml.filterref(filter='{}_{}_{}'.format(
-                interface.network.environment.name,
-                interface.network.name,
-                interface.mac_address))
+        if interface.type == 'network':
+            with device_xml.interface(type=interface.type):
+                device_xml.mac(address=interface.mac_address)
+                device_xml.source(
+                    network=self.driver.network_name(interface.network))
+                device_xml.target(dev="{0}{1}".format(if_prefix, interface.id))
+                if interface.type is not None:
+                    device_xml.model(type=interface.model)
+                device_xml.filterref(filter='{}_{}_{}'.format(
+                    interface.network.environment.name,
+                    interface.network.name,
+                    interface.mac_address))
+        if interface.type == 'bridge':
+            with device_xml.interface(type=interface.type):
+                if interface.type is not None:
+                    device_xml.model(type=interface.model)
+                device_xml.mac(address=interface.mac_address)
+                device_xml.source(bridge=interface.bridge)
+                device_xml.target(dev="{0}{1}".format(if_prefix, interface.id))
+
 
     def build_network_filter(self, network):
         """Generate nwfilter XML for network

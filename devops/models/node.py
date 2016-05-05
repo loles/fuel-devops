@@ -184,7 +184,8 @@ class Node(DriverModel):
     def define(self):
         """Define node and interface filter"""
         for iface in self.interfaces:
-            iface.define_filter()
+            if iface.network:
+                iface.define_filter()
         self.driver.node_define(self)
         self.save()
 
@@ -209,7 +210,8 @@ class Node(DriverModel):
                 self.destroy(verbose=False)
                 self.driver.node_undefine(self, undefine_snapshots=True)
                 for iface in self.interfaces:
-                    iface.undefine_filter()
+                    if iface.network:
+                        iface.undefine_filter()
         self.delete()
 
     def suspend(self, verbose=False):

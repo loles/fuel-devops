@@ -1,48 +1,19 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
-from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 
 
 class Migration(SchemaMigration):
     def forwards(self, orm):
-        # Adding field 'Environment.created'
-        db.add_column('devops_environment', 'created',
-                      self.gf('django.db.models.fields.DateTimeField')(
-                          default=datetime.datetime.utcnow,
-                          auto_now_add=True, blank=True), keep_default=False)
-
-        # Adding field 'Node.created'
-        db.add_column('devops_node', 'created',
-                      self.gf('django.db.models.fields.DateTimeField')(
-                          default=datetime.datetime.utcnow,
-                          auto_now_add=True, blank=True), keep_default=False)
-
-        # Adding field 'Volume.created'
-        db.add_column('devops_volume', 'created',
-                      self.gf('django.db.models.fields.DateTimeField')(
-                          default=datetime.datetime.utcnow,
-                          auto_now_add=True, blank=True), keep_default=False)
-
-        # Adding field 'Network.created'
-        db.add_column('devops_network', 'created',
-                      self.gf('django.db.models.fields.DateTimeField')(
-                          default=datetime.datetime.utcnow,
-                          auto_now_add=True, blank=True), keep_default=False)
+        # Adding field 'Interface.bridge'
+        db.add_column('devops_interface', 'bridge',
+                      self.gf('django.db.models.fields.CharField')(
+                          max_length=256, null=True), keep_default=False)
 
     def backwards(self, orm):
-        # Deleting field 'Environment.created'
-        db.delete_column('devops_environment', 'created')
-
-        # Deleting field 'Node.created'
-        db.delete_column('devops_node', 'created')
-
-        # Deleting field 'Volume.created'
-        db.delete_column('devops_volume', 'created')
-
-        # Deleting field 'Network.created'
-        db.delete_column('devops_network', 'created')
+        # Deleting field 'Interface.bridge'
+        db.delete_column('devops_interface', 'bridge')
 
     models = {
         u'devops.address': {
@@ -96,7 +67,9 @@ class Migration(SchemaMigration):
             'node': ('django.db.models.fields.related.ForeignKey', [],
                      {'to': u"orm['devops.Node']"}),
             'type': ('django.db.models.fields.CharField', [],
-                     {'max_length': '255'})
+                     {'max_length': '255'}),
+            'bridge': ('django.db.models.fields.CharField', [],
+                       {'unique': 'False', 'max_length': '255','null': 'True'}),
         },
         u'devops.network': {
             'Meta': {'unique_together': "(('name', 'environment'),)",

@@ -248,11 +248,12 @@ class Interface(models.Model):
     class Meta(object):
         db_table = 'devops_interface'
 
-    network = models.ForeignKey('Network')
+    network = models.ForeignKey('Network', null=True)
     node = models.ForeignKey('Node')
     mac_address = models.CharField(max_length=255, unique=True, null=False)
     type = models.CharField(max_length=255, null=False)
     model = choices('virtio', 'e1000', 'pcnet', 'rtl8139', 'ne2k_pci')
+    bridge = models.CharField(max_length=255, null=True)
 
     @property
     def target_dev(self):
@@ -287,7 +288,7 @@ class Interface(models.Model):
     @staticmethod
     def interface_create(network, node, type='network',
                          mac_address=None, model='virtio',
-                         interface_map=None):
+                         interface_map=None, bridge=None):
         """Create interface
 
         :rtype : Interface
@@ -300,9 +301,10 @@ class Interface(models.Model):
             interface = Interface.objects.create(
                 network=network, node=node, type=type,
                 mac_address=mac_addr or generate_mac(),
-                model=model)
-            Address.objects.create(ip_address=str(network.next_ip()),
-                                   interface=interface)
+                model=model, bridge=bridge)
+            if network:
+                Address.objects.create(ip_address=str(network.next_ip()),
+                                       interface=interface)
             return interface
 
         if interface_map:

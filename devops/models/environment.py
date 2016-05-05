@@ -321,16 +321,26 @@ class Environment(DriverModel):
                           model=settings.INTERFACE_MODEL):
         for interface in interfaces:
 
-            # TODO(ddmitriev): use l2_network_devices object to get
-            # the network device
-            network_name = interface['l2_network_device']
-            network = self.get_network(name=network_name)
+            interface_type = interface.get('type', 'network')
+            if interface_type == 'network':
+                # TODO(ddmitriev): use l2_network_devices object to get
+                # the network device
+                network_name = interface['l2_network_device']
+                network = self.get_network(name=network_name)
 
-            Interface.interface_create(
-                network,
-                node=node,
-                model=model,
-            )
+                Interface.interface_create(
+                    network,
+                    node=node,
+                    model=model,
+                )
+            elif interface_type == 'bridge':
+                Interface.interface_create(
+                    None,
+                    node=node,
+                    model=model,
+                    type=interface_type,
+                    bridge=interface['bridge']
+                )
 
     def create_interfaces_from_networks(self, networks, node,
                                         model=settings.INTERFACE_MODEL):

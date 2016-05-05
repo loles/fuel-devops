@@ -138,7 +138,7 @@ class Migration(SchemaMigration):
              self.gf('django.db.models.fields.CharField')(unique=True,
                                                           max_length=255)),
             ('network', self.gf('django.db.models.fields.related.ForeignKey')(
-                to=orm['devops.Network'])),
+                to=orm['devops.Network'], null=True)),
             ('node', self.gf('django.db.models.fields.related.ForeignKey')(
                 to=orm['devops.Node'])),
             ('type',
@@ -246,7 +246,7 @@ class Migration(SchemaMigration):
                 'django.db.models.fields.CharField', [],
                 {'max_length': '255'}),
             'network': ('django.db.models.fields.related.ForeignKey', [],
-                        {'to': u"orm['devops.Network']"}),
+                        {'to': u"orm['devops.Network']", 'null': 'True'}),
             'node': ('django.db.models.fields.related.ForeignKey', [],
                      {'to': u"orm['devops.Node']"}),
             'type': (
